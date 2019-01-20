@@ -1,9 +1,8 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
+import { updateBranch } from './helpers';
 
 admin.initializeApp(functions.config().firebase);
-
-const databaseInstance = admin.firestore();
 
 export const sendManagerStatusChangedNotification = functions.firestore
   .document('Managers/{managerID}')
@@ -34,4 +33,22 @@ export const sendManagerStatusChangedNotification = functions.firestore
     } else {
       return false;
     }
+  });
+
+export const deleteManagerAuthAccount = functions.firestore
+  .document('Managers/{managerID}')
+  .onDelete((snap, event) => {
+    const data: any = snap.data();
+
+    const uid = event.params.managerID;
+    const branchID = data.branchID;
+
+    const dataMap = {
+      branchManagerID: null,
+      isBranchActive: false
+    };
+
+    return updateBranch(branchID, dataMap).then(isdone => {
+      return admin.auth().deleteUser(uid);
+    });
   });
