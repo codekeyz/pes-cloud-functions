@@ -8,3 +8,12 @@ export async function updateBranch(branchId: string, data: {}) {
     .update(data);
   return true;
 }
+
+export async function updateTransaction(transId: string, data: {}) {
+  await admin
+    .firestore()
+    .collection('Transactions')
+    .doc(transId)
+    .update(data);
+  return true;
+}

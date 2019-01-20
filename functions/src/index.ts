@@ -1,6 +1,6 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
-import { updateBranch } from './helpers';
+import { updateBranch, updateTransaction } from './helpers';
 
 admin.initializeApp(functions.config().firebase);
 
@@ -50,5 +50,29 @@ export const deleteManagerAuthAccount = functions.firestore
 
     return updateBranch(branchID, dataMap).then(isdone => {
       return admin.auth().deleteUser(uid);
+    });
+  });
+
+export const sendTransactionNotification = functions.firestore
+  .document('Transactions/{transactionID}')
+  .onCreate((snap, event) => {
+    const data: any = snap.data();
+
+    const amount = data.amount;
+    const uid = event.params.transactionID;
+    const branchName = data.branchName;
+
+    const dataMap = {
+      createdAt: new Date()
+    };
+    const payload = {
+      data: {
+        title: 'Transaction Notification',
+        message: `${branchName} has just been added a new contribution worth GH¢${amount}`
+      }
+    };
+
+    return updateTransaction(uid, dataMap).then(isdone => {
+      return admin.messaging().sendToTopic('Transactions', payload);
     });
   });
