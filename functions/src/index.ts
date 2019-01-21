@@ -1,6 +1,10 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
-import { updateBranch, updateTransaction } from './helpers';
+import {
+  updateBranch,
+  updateTransaction,
+  processTransactionsInday
+} from './helpers';
 
 admin.initializeApp(functions.config().firebase);
 
@@ -75,4 +79,16 @@ export const sendTransactionNotification = functions.firestore
     return updateTransaction(uid, dataMap).then(isdone => {
       return admin.messaging().sendToTopic('Transactions', payload);
     });
+  });
+
+export const calculateAndUpdateTransactionTimelines = functions.firestore
+  .document('Transactions/{transactionID}')
+  .onCreate((snap, event) => {
+    const transData: any = snap.data();
+    const branch = transData.branchID;
+    const service = transData.serviceID;
+    const year = transData.yearID;
+    const month = transData.monthID;
+    const week = transData.weekID;
+    const day = transData.dayID;
   });
