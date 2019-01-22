@@ -1,17 +1,21 @@
-import * as admin from 'firebase-admin';
-
-const firestore = admin.firestore();
-
-export async function updateBranch(branchId: string, data: {}) {
-  await firestore
+export async function updateBranch(
+  database: FirebaseFirestore.Firestore,
+  branchId: string,
+  data: {}
+) {
+  await database
     .collection('Branches')
     .doc(branchId)
     .update(data);
   return true;
 }
 
-export async function updateTransaction(transId: string, data: {}) {
-  await firestore
+export async function updateTransaction(
+  database: FirebaseFirestore.Firestore,
+  transId: string,
+  data: {}
+) {
+  await database
     .collection('Transactions')
     .doc(transId)
     .update(data);
@@ -19,20 +23,29 @@ export async function updateTransaction(transId: string, data: {}) {
 }
 
 export async function processTransactionsInday(
-  dayId: string,
-  branchId: string
+  database: FirebaseFirestore.Firestore,
+  dayId: string
 ) {
-  const datalist = await firestore
+  const datalist = await database
     .collection('Transactions')
     .where('day', '==', dayId)
     .get();
 
   let totalBranchAmountforDay = 0;
-  await datalist.forEach(data => {
-    const transData: any = data.data();
-    (totalBranchAmountforDay = totalBranchAmountforDay + transData.amount);
+  const opts = datalist.docs.map(trans => {
+    const data = trans.data();
+    const amount: number = data.amount || 0;
+    return (totalBranchAmountforDay = totalBranchAmountforDay + amount);
   });
 
-  
+  await Promise.all(opts);
 
+  const dataMap = {
+    totalAmount: totalBranchAmountforDay
+  };
+
+  return database
+    .collection('Days')
+    .doc(dayId)
+    .update(dataMap);
 }

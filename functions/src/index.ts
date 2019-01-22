@@ -8,6 +8,8 @@ import {
 
 admin.initializeApp(functions.config().firebase);
 
+const databaseInstance = admin.firestore();
+
 export const sendManagerStatusChangedNotification = functions.firestore
   .document('Managers/{managerID}')
   .onUpdate((snap, event) => {
@@ -52,7 +54,7 @@ export const deleteManagerAuthAccount = functions.firestore
       isBranchActive: false
     };
 
-    return updateBranch(branchID, dataMap).then(isdone => {
+    return updateBranch(databaseInstance, branchID, dataMap).then(isdone => {
       return admin.auth().deleteUser(uid);
     });
   });
@@ -76,7 +78,7 @@ export const sendTransactionNotification = functions.firestore
       }
     };
 
-    return updateTransaction(uid, dataMap).then(isdone => {
+    return updateTransaction(databaseInstance, uid, dataMap).then(isdone => {
       return admin.messaging().sendToTopic('Transactions', payload);
     });
   });
@@ -85,10 +87,6 @@ export const calculateAndUpdateTransactionTimelines = functions.firestore
   .document('Transactions/{transactionID}')
   .onCreate((snap, event) => {
     const transData: any = snap.data();
-    const branch = transData.branchID;
-    const service = transData.serviceID;
-    const year = transData.yearID;
-    const month = transData.monthID;
-    const week = transData.weekID;
-    const day = transData.dayID;
+    const day = transData.day;
+    return processTransactionsInday(databaseInstance, day);
   });
