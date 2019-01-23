@@ -146,7 +146,7 @@ export async function processTransactionsInYear(
     .update(dataMap);
 }
 
-export async function processTranstionsInService(
+export async function processTransactionsInService(
   database: FirebaseFirestore.Firestore,
   serviceId: string
 ) {
