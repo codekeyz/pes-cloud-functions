@@ -5,7 +5,8 @@ import {
   updateTransaction,
   processTransactionsInday,
   processTransactionsInWeek,
-  processTransactionsInMonth
+  processTransactionsInMonth,
+  processTransactionsInYear
 } from './helpers';
 
 admin.initializeApp(functions.config().firebase);
@@ -92,11 +93,15 @@ export const calculateAndUpdateTransactionTimelines = functions.firestore
     const day: string = transData.day;
     const week: string = transData.week;
     const month: string = transData.month;
+    const year: string = transData.year;
     return processTransactionsInday(databaseInstance, day)
       .then(() => {
         return processTransactionsInWeek(databaseInstance, week);
       })
       .then(() => {
         return processTransactionsInMonth(databaseInstance, month);
+      })
+      .then(() => {
+        return processTransactionsInYear(databaseInstance, year);
       });
   });

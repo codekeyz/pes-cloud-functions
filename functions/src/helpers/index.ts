@@ -114,3 +114,34 @@ export async function processTransactionsInMonth(
     .doc(monthId)
     .update(dataMap);
 }
+
+export async function processTransactionsInYear(
+  database: FirebaseFirestore.Firestore,
+  yearId: string
+) {
+  // Get All Months in Year -> {yearId}
+  const datalist = await database
+    .collection('Months')
+    .where('yearID', '==', yearId)
+    .get();
+
+  let totalBranchAmountforYear = 0;
+  const opts = datalist.docs.map(trans => {
+    const data = trans.data();
+    const amount: number = data.totalAmount || 0;
+    return (totalBranchAmountforYear = totalBranchAmountforYear + amount);
+  });
+
+  // Wait for calculation to finish
+  await Promise.all(opts);
+
+  const dataMap = {
+    totalAmount: totalBranchAmountforYear
+  };
+
+  // Write the total to the Month Model
+  return database
+    .collection('Years')
+    .doc(yearId)
+    .update(dataMap);
+}
