@@ -1,14 +1,6 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
-import {
-  updateBranch,
-  updateTransaction,
-  processTransactionsInday,
-  processTransactionsInWeek,
-  processTransactionsInMonth,
-  processTransactionsInYear,
-  processTranstionsInService
-} from './helpers';
+import * as helperFunctions from './helpers';
 
 admin.initializeApp(functions.config().firebase);
 
@@ -58,9 +50,11 @@ export const deleteManagerAuthAccount = functions.firestore
       isBranchActive: false
     };
 
-    return updateBranch(databaseInstance, branchID, dataMap).then(isdone => {
-      return admin.auth().deleteUser(uid);
-    });
+    return helperFunctions
+      .updateBranch(databaseInstance, branchID, dataMap)
+      .then(isdone => {
+        return admin.auth().deleteUser(uid);
+      });
   });
 
 export const sendTransactionNotification = functions.firestore
@@ -82,9 +76,11 @@ export const sendTransactionNotification = functions.firestore
       }
     };
 
-    return updateTransaction(databaseInstance, uid, dataMap).then(isdone => {
-      return admin.messaging().sendToTopic('Transactions', payload);
-    });
+    return helperFunctions
+      .updateTransaction(databaseInstance, uid, dataMap)
+      .then(isdone => {
+        return admin.messaging().sendToTopic('Transactions', payload);
+      });
   });
 
 export const calculateAndUpdateTransactionTimelines = functions.firestore
@@ -96,17 +92,30 @@ export const calculateAndUpdateTransactionTimelines = functions.firestore
     const month: string = transData.month;
     const year: string = transData.year;
     const service: string = transData.serviceID;
-    return processTransactionsInday(databaseInstance, day)
+    return helperFunctions
+      .processTransactionsInday(databaseInstance, day)
       .then(() => {
-        return processTransactionsInWeek(databaseInstance, week);
+        return helperFunctions.processTransactionsInWeek(
+          databaseInstance,
+          week
+        );
       })
       .then(() => {
-        return processTransactionsInMonth(databaseInstance, month);
+        return helperFunctions.processTransactionsInMonth(
+          databaseInstance,
+          month
+        );
       })
       .then(() => {
-        return processTransactionsInYear(databaseInstance, year);
+        return helperFunctions.processTransactionsInYear(
+          databaseInstance,
+          year
+        );
       })
       .then(() => {
-        return processTranstionsInService(databaseInstance, service);
+        return helperFunctions.processTransactionsInService(
+          databaseInstance,
+          service
+        );
       });
   });
