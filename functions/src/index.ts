@@ -3,7 +3,8 @@ import * as admin from 'firebase-admin';
 import {
   updateBranch,
   updateTransaction,
-  processTransactionsInday
+  processTransactionsInday,
+  processTransactionsInWeek
 } from './helpers';
 
 admin.initializeApp(functions.config().firebase);
@@ -17,10 +18,10 @@ export const sendManagerStatusChangedNotification = functions.firestore
     const newData: any = snap.after.data();
     const oldStatus = oldData.isAccountConfirmed;
     const newStatus = newData.isAccountConfirmed;
-    const token = newData.myToken;
+    const token: string = newData.myToken;
     const branchName = newData.branchName;
     let message = '';
-    if (oldStatus !== newStatus && token !== null) {
+    if (oldStatus !== newStatus && token && token.length > 0) {
       if (newStatus === true) {
         message = `Your account has been activated, You are the manager for ${branchName}`;
       } else {
@@ -88,5 +89,8 @@ export const calculateAndUpdateTransactionTimelines = functions.firestore
   .onCreate((snap, event) => {
     const transData: any = snap.data();
     const day = transData.day;
-    return processTransactionsInday(databaseInstance, day);
+    const week = transData.week;
+    return processTransactionsInday(databaseInstance, day).then(() => {
+      return processTransactionsInWeek(databaseInstance, week);
+    });
   });
