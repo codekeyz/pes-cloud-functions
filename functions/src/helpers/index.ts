@@ -139,9 +139,40 @@ export async function processTransactionsInYear(
     totalAmount: totalBranchAmountforYear
   };
 
-  // Write the total to the Month Model
+  // Write the total to the Year Model
   return database
     .collection('Years')
     .doc(yearId)
+    .update(dataMap);
+}
+
+export async function processTranstionsInService(
+  database: FirebaseFirestore.Firestore,
+  serviceId: string
+) {
+  // Get All Years in this service -> {serviceId}
+  const datalist = await database
+    .collection('Years')
+    .where('serviceID', '==', serviceId)
+    .get();
+
+  let totalBranchAmountforService = 0;
+  const opts = datalist.docs.map(trans => {
+    const data = trans.data();
+    const amount: number = data.totalAmount || 0;
+    return (totalBranchAmountforService = totalBranchAmountforService + amount);
+  });
+
+  // Wait for calculation to finish
+  await Promise.all(opts);
+
+  const dataMap = {
+    totalAmount: totalBranchAmountforService
+  };
+
+  // Write the total to the Service Model
+  return database
+    .collection('Services')
+    .doc(serviceId)
     .update(dataMap);
 }
