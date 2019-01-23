@@ -4,7 +4,8 @@ import {
   updateBranch,
   updateTransaction,
   processTransactionsInday,
-  processTransactionsInWeek
+  processTransactionsInWeek,
+  processTransactionsInMonth
 } from './helpers';
 
 admin.initializeApp(functions.config().firebase);
@@ -90,7 +91,12 @@ export const calculateAndUpdateTransactionTimelines = functions.firestore
     const transData: any = snap.after.data();
     const day: string = transData.day;
     const week: string = transData.week;
-    return processTransactionsInday(databaseInstance, day).then(() => {
-      return processTransactionsInWeek(databaseInstance, week);
-    });
+    const month: string = transData.month;
+    return processTransactionsInday(databaseInstance, day)
+      .then(() => {
+        return processTransactionsInWeek(databaseInstance, week);
+      })
+      .then(() => {
+        return processTransactionsInMonth(databaseInstance, month);
+      });
   });
