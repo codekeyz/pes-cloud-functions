@@ -88,8 +88,8 @@ export const sendTransactionNotification = functions.firestore
 
 export const calculateAndUpdateTransactionTimelines = functions.firestore
   .document('Transactions/{transactionID}')
-  .onUpdate((snap, _) => {
-    const transData: any = snap.after.data();
+  .onCreate((snap, _) => {
+    const transData: any = snap.data();
     const day: string = transData.day;
     const week: string = transData.week;
     const month: string = transData.month;
