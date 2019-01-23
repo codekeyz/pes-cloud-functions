@@ -60,7 +60,7 @@ export async function processTransactionsInWeek(
   // Get All Days in Week -> {weekId}
   const datalist = await database
     .collection('Days')
-    .where('week', '==', weekId)
+    .where('weekID', '==', weekId)
     .get();
 
   let totalBranchAmountforWeek = 0;

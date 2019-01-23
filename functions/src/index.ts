@@ -13,11 +13,11 @@ const databaseInstance = admin.firestore();
 
 export const sendManagerStatusChangedNotification = functions.firestore
   .document('Managers/{managerID}')
-  .onUpdate((snap, event) => {
+  .onUpdate((snap, _) => {
     const oldData: any = snap.before.data();
     const newData: any = snap.after.data();
-    const oldStatus = oldData.isAccountConfirmed;
-    const newStatus = newData.isAccountConfirmed;
+    const oldStatus: boolean = oldData.isAccountConfirmed;
+    const newStatus: boolean = newData.isAccountConfirmed;
     const token: string = newData.myToken;
     const branchName = newData.branchName;
     let message = '';
@@ -47,8 +47,8 @@ export const deleteManagerAuthAccount = functions.firestore
   .onDelete((snap, event) => {
     const data: any = snap.data();
 
-    const uid = event.params.managerID;
-    const branchID = data.branchID;
+    const uid: string = event.params.managerID;
+    const branchID: string = data.branchID;
 
     const dataMap = {
       branchManagerID: null,
@@ -65,9 +65,9 @@ export const sendTransactionNotification = functions.firestore
   .onCreate((snap, event) => {
     const data: any = snap.data();
 
-    const amount = data.amount;
-    const uid = event.params.transactionID;
-    const branchName = data.branchName;
+    const amount: number = data.amount;
+    const uid: string = event.params.transactionID;
+    const branchName: string = data.branchName;
 
     const dataMap = {
       createdAt: new Date()
@@ -86,10 +86,10 @@ export const sendTransactionNotification = functions.firestore
 
 export const calculateAndUpdateTransactionTimelines = functions.firestore
   .document('Transactions/{transactionID}')
-  .onCreate((snap, event) => {
-    const transData: any = snap.data();
-    const day = transData.day;
-    const week = transData.week;
+  .onUpdate((snap, _) => {
+    const transData: any = snap.after.data();
+    const day: string = transData.day;
+    const week: string = transData.week;
     return processTransactionsInday(databaseInstance, day).then(() => {
       return processTransactionsInWeek(databaseInstance, week);
     });
