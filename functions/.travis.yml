@@ -1,4 +1,0 @@
-deploy:
-  provider: firebase
-  token:
-    secure: '1/oEpCZi_6sjfF3jzPL3mbFPr76xKBnFVGuIiTeIz8Ue5VHRgHAjUhvAJPav7ZGX2v'
