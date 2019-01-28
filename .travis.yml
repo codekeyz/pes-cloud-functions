@@ -2,6 +2,8 @@ sudo: false
 language: node_js
 node_js:
   - '6'
+before_install:
+  - 'npm i -g firebase-tools'
 install:
   - cd functions
   - npm install
