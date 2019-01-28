@@ -1,0 +1,12 @@
+sudo: false
+language: node_js
+node_js:
+  - '6'
+install:
+  - npm install
+script:
+  - npm run deploy
+deploy:
+  provider: firebase
+  token:
+    secure: w+P3TvZiCjCYxbXsIGG0Dc37CP+EXdkNppMNibr3cvnGjuCBfQurTGifKPXq/vADdP9urZL1/z8Boo4QqsyUGcqPVmiUerDKd6K751UVKnf3vxHi/KvE8u3R8S7ehzaGJp0/9t71oY6R4TVR/oMsjyf+0z7uvRcS5RGRoXS4FiuII+kd/P+WEOfwy8NzQsF/Oe9c37/6QA3mAoHpYFo+2djiji0kw+6lAx/0TD6KGCqlI5U7edYk3bubz4N2WFzLkkbcqob85gsNx4JtyDDFUlAbcO0frvbl226lQQlgm/zYCN/eDLh0UfY+tKwqYjAkkmVcj29hdNr6BHg0MkvorsxzncrRcGP2Ca4zO5HG2PE2ngMG0Q9g0n47PR2cSwdwASSQJXIpzFA+yzN3lEMBVNI+arSW/w96IdUMVeumwG7nzl7T+7CC1vSF6GFQ9EPKWujdT2JwAwDb9duVE+C+Kt+52OnMghIyOQdv2Lq5KP4Zyz8e9MaKXIM3I9/Gy4G6dBpi8nA2cU5TAHoRitqc1K0LnZBTmJPmOPTn63iRYINZ2py6XhxdJ13ctzeVAnx+vmJScsuFjnV4UXL3iZvLbH1/UNLHOT6BRIjuybO7pOV3pPHVVv17tWnruaMHDOsIWEsuZP+3lRFXutKnxl/pxKd/In7jVA5kKWeUenzzQdk=
